@@ -1,0 +1,10 @@
+---
+- name: nginxをインストール
+  yum: name=nginx state=present
+
+- name: wordpress接続用のnginx設定ファイルを登録
+  template: src=default.conf dest=/etc/nginx/conf.d/default.conf
+  notify: nginxリロード
+
+- name: nginx起動
+  service: name=nginx state=started enabled=true

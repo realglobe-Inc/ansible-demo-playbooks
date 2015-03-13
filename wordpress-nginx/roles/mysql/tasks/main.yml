@@ -1,0 +1,19 @@
+---
+- name: mysqlパッケージをインストール
+  yum: name={{ item }} state=present
+  with_items:
+   - mysql-server
+   - MySQL-python
+   - libselinux-python
+   - libsemanage-python
+
+- name: SELinuxにmysqlを許可設定
+  seboolean: name=mysql_connect_any state=true persistent=yes
+
+- name: mysql設定ファイルを設置
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+  notify: 
+  - mysql再起動
+
+- name: mysqlを起動
+  service: name=mysqld state=started enabled=true

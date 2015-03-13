@@ -1,0 +1,13 @@
+---
+- name: libselinux-pythonをインストール
+  yum: name=libselinux-python state=present
+
+- name: EPELリポジトリを登録
+  copy: src=epel.repo dest=/etc/yum.repos.d/epel.repo
+
+- name: EPEL用のGPGキーを設置
+  copy: src=RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+
+- name: iptablesの設定を更新
+  copy: src=iptables-save dest=/etc/sysconfig/iptables
+  notify: iptables再起動

@@ -1,0 +1,25 @@
+---
+- name: php-fpmと依存モジュールをインストール
+  yum: name={{ item }} state=present
+  with_items:
+    - php
+    - php-fpm
+    - php-enchant
+    - php-IDNA_Convert
+    - php-mbstring
+    - php-mysql
+    - php-PHPMailer
+    - php-process
+    - php-simplepie
+    - php-xml
+
+- name: デフォルト設定を無効化
+  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.disabled creates=/etc/php-fpm.d/www.disabled
+  notify: php-fpm再起動
+
+- name: php-fpm設定ファイルを配置
+  template: src=wordpress.conf dest=/etc/php-fpm.d/
+  notify: php-fpm再起動
+
+- name: php-fpm起動
+  service: name=php-fpm state=started enabled=true
