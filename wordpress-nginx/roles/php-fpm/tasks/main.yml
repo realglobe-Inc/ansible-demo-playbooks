@@ -20,6 +20,3 @@
 - name: php-fpm設定ファイルを配置
   template: src=wordpress.conf dest=/etc/php-fpm.d/
   notify: php-fpm再起動
-
-- name: php-fpm起動
-  service: name=php-fpm state=started enabled=true
