@@ -11,3 +11,6 @@
 - name: iptablesの設定を更新
   copy: src=iptables-save dest=/etc/sysconfig/iptables
   notify: iptables再起動
+
+- name: SELinuxをpermissiveモードに設定
+  selinux: policy=targeted state=permissive
