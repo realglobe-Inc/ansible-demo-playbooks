@@ -24,8 +24,6 @@
       with_items:
         - mysql-server
         - MySQL-python
-        - libselinux-python
-        - libsemanage-python
         - nginx
         - php
         - php-fpm
