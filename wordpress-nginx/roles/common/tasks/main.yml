@@ -1,6 +1,12 @@
 ---
-- name: libselinux-pythonをインストール
-  yum: name=libselinux-python state=present
+- name: selinux関連モジュールをインストール
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - selinux-policy-targeted
+    - policycoreutils-python
+    - libselinux-python
 
 - name: EPELリポジトリを登録
   copy: src=epel.repo dest=/etc/yum.repos.d/epel.repo
