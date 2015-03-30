@@ -19,10 +19,12 @@
         - /etc/my.cnf
         - /var/lib/mysql
 
+    - name: mysql-serverをアンインストール
+      yum: name=mysql-server state=absent
+
     - name: モジュールをアンインストール
       yum: name={{ item }} state=absent
       with_items:
-        - mysql-server
         - MySQL-python
         - nginx
         - php
