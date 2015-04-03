@@ -1,4 +1,11 @@
 ---
+- name: Amazon Linuxの場合、python 2.7をデフォルトとして設定
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python2.7
+  when: ansible_distribution == "Amazon"
+
 - name: selinux関連モジュールをインストール
   yum:
     name: "{{ item }}"

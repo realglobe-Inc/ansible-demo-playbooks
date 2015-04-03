@@ -1,9 +1,14 @@
 ---
-- name: mysqlパッケージをインストール
-  yum: name={{ item }} state=present
-  with_items:
-   - mysql-server
-   - MySQL-python
+- name: mysql-serverをインストール
+  yum: name=mysql-server state=present
+
+- name: MySQL-pythonパッケージをインストール
+  yum: name=MySQL-python state=present
+  when: ansible_distribution != "Amazon"
+
+- name: MySQL-python27パッケージをインストール
+  yum: name=MySQL-python27 state=present
+  when: ansible_distribution == "Amazon"
 
 - name: mysql設定ファイルを設置
   template: src=my.cnf.j2 dest=/etc/my.cnf

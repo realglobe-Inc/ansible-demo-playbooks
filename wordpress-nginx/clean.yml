@@ -3,29 +3,23 @@
   hosts: wordpress-server
   sudo: yes
   tasks:
-    - name: php-fpm, nginx, mysqlのプロセスを停止
-      service: name={{ item }} state=stopped
-      with_items:
-        - php-fpm
-        - nginx
-        - mysqld
-
-    - name: 設置済みファイルを削除
-      file: path={{ item }} state=absent
-      with_items:
-        - /srv/wordpress
-        - /etc/php-fpm.d
-        - /etc/nginx
-        - /etc/my.cnf
-        - /var/lib/mysql
-
-    - name: mysql-serverをアンインストール
+    - name: mysql-serverをアンインストール（初回）
       yum: name=mysql-server state=absent
+      ignore_errors: yes
+      when: ansible_distribution == "Amazon"
+
+    - name: MySQL-pythonをアンインストール
+      yum: name=MySQL-python state=absent
+      when: ansible_distribution != "Amazon"
+
+    - name: MySQL-python27をアンインストール
+      yum: name=MySQL-python27 state=absent
+      when: ansible_distribution == "Amazon"
 
     - name: モジュールをアンインストール
       yum: name={{ item }} state=absent
       with_items:
-        - MySQL-python
+        - mysql-server
         - nginx
         - php
         - php-fpm
@@ -37,3 +31,12 @@
         - php-process
         - php-simplepie
         - php-xml
+
+    - name: 設置済みファイルを削除
+      file: path={{ item }} state=absent
+      with_items:
+        - /srv/wordpress
+        - /etc/php-fpm.d
+        - /etc/nginx
+        - /etc/my.cnf
+        - /var/lib/mysql

@@ -14,7 +14,7 @@
     - php-xml
 
 - name: デフォルト設定を無効化
-  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.disabled creates=/etc/php-fpm.d/www.disabled
+  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.disabled removes=/etc/php-fpm.d/www.conf
   notify: php-fpm再起動
 
 - name: php-fpm設定ファイルを配置
