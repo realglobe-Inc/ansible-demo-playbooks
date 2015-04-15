@@ -24,3 +24,14 @@ auto_up_disable: false
 #false = Development, minor, and major updates are all disabled
 #minor = Minor updates are enabled, development, and major updates are disabled
 core_update_level: true
+
+# cloudstack用設定
+cs_ssh_key_name: demosshkey
+cs_vm_name: demowordpress
+cs_vm_spec: light.S1
+# 環境ごとの設定必須
+cs_api_url: ""
+cs_public_ip: ""
+cs_api_key: ""
+cs_secret_key: ""
+cs_ssh_public_key: ""
