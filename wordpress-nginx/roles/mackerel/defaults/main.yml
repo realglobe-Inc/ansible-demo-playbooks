@@ -1,0 +1,6 @@
+---
+mackerel_setup_url_base: https://mackerel.io/assets/files/scripts
+mackerel_setup_yum_url: "{{ mackerel_setup_url_base }}/setup-yum.sh"
+
+# You must set mackerel_api_key!
+# mackerel_api_key: YourMackerelApiKey
