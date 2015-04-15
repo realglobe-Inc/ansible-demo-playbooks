@@ -65,5 +65,6 @@
         groups: wordpress-server
         ansible_ssh_user: root
         ansible_ssh_private_key_file: "/tmp/{{ cs_public_ip }}.pem"
+        mackerel_api_key: "{{ mackerel_api_key }}"
 
 - include: site.yml
