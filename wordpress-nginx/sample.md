@@ -18,10 +18,10 @@
   * 新しくDB用サーバーのVMを作成する
   * コントロールマシンからSSH接続できることを確認する
 2. インベントリにグループを追加する
-  * playbookを編集する
+3. playbookを編集する
   * site.ymlを編集する
   * mysql roleを編集する
-3. wordpress roleを編集する
+  * wordpress roleを編集する
 
 # Ansibleを実行する
 
@@ -275,6 +275,7 @@ DBを別サーバーに分けてみる
     ```yaml
     - name: Wordpress用データベースを作成
       mysql_db: name={{ wp_db_name }} state=present
+
     - name: Wordpress用データベースユーザーを作成
       mysql_user: name={{ wp_db_user }}
         password={{ wp_db_password }}
