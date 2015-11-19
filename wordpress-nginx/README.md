@@ -1,4 +1,4 @@
-# PC上での手順
+# WordPress構築Playbook - PC上での手順
 
 ## 目次
 
