@@ -1,6 +1,7 @@
 ---
 - name: mysql-serverをインストール
-  yum: name=mysql-server state=present
+  yum:
+    name: "{{ mysql_project_name }}-server"
 
 - name: MySQL-pythonパッケージをインストール
   yum: name=MySQL-python state=present
@@ -16,4 +17,7 @@
   - mysql再起動
 
 - name: mysqlを起動
-  service: name=mysqld state=started enabled=true
+  service:
+    name: "{{ mysql_daemon_name }}"
+    state: started
+    enabled: yes

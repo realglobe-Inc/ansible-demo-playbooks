@@ -1,10 +1,15 @@
 ---
 - name: Wordpressをダウンロード
-  get_url: url=https://ja.wordpress.org/wordpress-{{ wp_version }}-ja.tar.gz dest=/srv/wordpress-{{ wp_version }}-ja.tar.gz
-           sha256sum="{{ wp_sha256sum }}"
+  get_url:
+    url: https://ja.wordpress.org/wordpress-{{ wp_version }}-ja.tar.gz
+    dest: /srv/wordpress-{{ wp_version }}-ja.tar.gz
+    sha256sum: "{{ wp_sha256sum }}"
 
-- name: 圧縮ファイルを展開
-  command: chdir=/srv/ /bin/tar xvf wordpress-{{ wp_version }}-ja.tar.gz creates=/srv/wordpress
+- name: Wordpress圧縮ファイルを展開
+  unarchive:
+    src: /srv/wordpress-{{ wp_version }}-ja.tar.gz
+    dest: /srv/
+    copy: no
 
 - name: \"wordpress\"グループを追加
   group: name=wordpress

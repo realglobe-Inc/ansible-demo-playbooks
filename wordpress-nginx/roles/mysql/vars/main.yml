@@ -1,0 +1,3 @@
+---
+mysql_project_name: "{% if ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 7 %}mariadb{% else %}mysql{% endif %}"
+mysql_daemon_name: "{% if mysql_project_name == 'mariadb' %}mariadb{% else %}mysqld{% endif %}"

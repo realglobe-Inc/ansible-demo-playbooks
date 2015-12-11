@@ -7,5 +7,5 @@ symbolic-links=0
 port={{ mysql_port }}
 
 [mysqld_safe]
-log-error=/var/log/mysqld.log
-pid-file=/var/run/mysqld/mysqld.pid
+log-error=/var/log/{% if mysql_project_name == 'mariadb' %}mariadb/{% endif %}/{{ mysql_daemon_name }}.log
+pid-file=/var/run/{{ mysql_daemon_name }}/{{ mysql_daemon_name }}.pid
