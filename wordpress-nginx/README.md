@@ -199,6 +199,7 @@ DBサーバー、アプリケーション・サーバー毎に必要なロール
 * site.yml
 
   ```yaml
+  ---
   - name: 最初にDB, アプリ両サーバーの情報を取得する
     hosts: all
 
@@ -256,8 +257,7 @@ DBサーバー、アプリケーション・サーバー毎に必要なロール
       priv: "{{ wp_db_name }}.*:ALL"
       host: "{{ hostvars[item].ansible_default_ipv4.address }}"
       state: present
-    with_items:
-      "{{ groups['wordpress-server'] }}"
+    with_items: groups['wordpress-server']
   ```
 
   長い書き方になってしまいますが、この様に書くことで「`wordpress-server`グループに属する全ホストのipアドレス」を動的に設定することができ、冗長化などの際のplaybookの汎用性を高めることができます。

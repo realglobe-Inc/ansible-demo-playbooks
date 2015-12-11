@@ -35,10 +35,20 @@
     state: present
 
 - name: Wordpress設定ファイルを配置
-  template: src=wp-config.php dest=/srv/wordpress/
+  template:
+    src: wp-config.php
+    dest: /srv/wordpress/wp-config.php
 
 - name: Wordpressインストールディレクトリ下のオーナーを変更
-  file: path=/srv/wordpress/ owner=wordpress group=wordpress state=directory recurse=yes
+  file:
+    path: /srv/wordpress/
+    owner: wordpress
+    group: wordpress
+    state: directory
+    recurse: yes
 
 - name: php-fpm起動
-  service: name=php-fpm state=started enabled=true
+  service:
+    name: php-fpm
+    state: started
+    enabled: true

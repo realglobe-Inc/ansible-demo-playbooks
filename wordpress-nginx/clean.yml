@@ -39,7 +39,5 @@
       file: path={{ item }} state=absent
       with_items:
         - /srv/wordpress
-        - /etc/php-fpm.d
-        - /etc/nginx
         - /etc/my.cnf
         - /var/lib/mysql
