@@ -134,7 +134,11 @@ Ansible実行マシンからWordpressサーバーにSSH接続できるように�
     ```ini
     [wordpress-server]
     xxx.xxx.xxx.xxx
+    
+    [wordpress-server:vars]
+    ansible_ssh_user=root
     ```
+※ AWSをお使いの方は ```ansible_ssh_host=centos``` としてください
 
 ## 7. ansible-playbook実行
 
@@ -190,10 +194,18 @@ DBを別サーバーに分けてみる
     ```ini
     [wordpress-server]
     xxx.xxx.xxx.xxx
+    
+    [wordpress-server:vars]
+    ansible-ssh-user=root
 
     [wordpress-db]
     xxx.xxx.xxx.xxx
+    
+    [wordpress-db:vars]
+    ansible-ssh-user=root
     ```
+    
+※ AWSをお使いの方は ```ansible_ssh_host=centos``` としてください
 
 ## 10. playbookを編集する
 
