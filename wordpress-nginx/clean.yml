@@ -20,6 +20,9 @@
       yum: name={{ item }} state=absent
       with_items:
         - mysql-server
+        - mariadb-server
+        - mysql
+        - mariadb
         - nginx
         - php
         - php-fpm
