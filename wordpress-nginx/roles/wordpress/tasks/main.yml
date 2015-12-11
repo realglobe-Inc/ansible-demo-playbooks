@@ -12,16 +12,27 @@
     copy: no
 
 - name: \"wordpress\"グループを追加
-  group: name=wordpress
+  group:
+    name: wordpress
 
 - name: \"wordpress\"ユーザーを追加
-  user: name=wordpress group=wordpress home=/srv/wordpress/
+  user:
+    name: wordpress
+    group: wordpress
+    home: /srv/wordpress/
 
 - name: Wordpress用データベースを作成
-  mysql_db: name={{ wp_db_name }} state=present
+  mysql_db:
+    name: "{{ wp_db_name }}"
+    state: present
 
 - name: Wordpress用データベースユーザーを作成
-  mysql_user: name={{ wp_db_user }} password={{ wp_db_password }} priv={{ wp_db_name }}.*:ALL host='localhost' state=present
+  mysql_user:
+    name: "{{ wp_db_user }}"
+    password: "{{ wp_db_password }}"
+    priv: "{{ wp_db_name }}.*:ALL"
+    host: localhost
+    state: present
 
 - name: Wordpress設定ファイルを配置
   template: src=wp-config.php dest=/srv/wordpress/
