@@ -1,5 +1,5 @@
 ---
-- name: Amazon Linuxの場合、python 2.7をデフォルトとして設定
+- name: python 2.7をデフォルトとして設定(AmazonLinux)
   alternatives:
     name: python
     link: /usr/bin/python
@@ -16,10 +16,20 @@
     - libselinux-python
 
 - name: EPELリポジトリを登録
-  copy: src=epel.repo dest=/etc/yum.repos.d/epel.repo
-
-- name: EPEL用のGPGキーを設置
-  copy: src=RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+  yum:
+    name: epel-release
 
 - name: SELinuxをpermissiveモードに設定
   selinux: policy=targeted state=permissive
+
+- name: iptablesを停止(RHEL6系)
+  service:
+    name: iptables
+    state: stopped
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int < 7
+
+- name: firewalldを停止(RHEL7系)
+  service:
+    name: firewalld
+    state: stopped
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= 7
