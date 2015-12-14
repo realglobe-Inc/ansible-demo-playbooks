@@ -1,2 +1,2 @@
 [wordpress-server]
-webserver2 ansible_ssh_user=root
+wordpress.host ansible_ssh_user=root
