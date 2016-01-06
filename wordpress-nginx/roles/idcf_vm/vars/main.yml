@@ -1,0 +1,2 @@
+---
+idcf_vm_full_name: "{{ idcf_vm_prefix }}{{ idcf_vm_name }}"
