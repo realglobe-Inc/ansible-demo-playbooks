@@ -1,0 +1,13 @@
+{% for group, hosts in groups.iteritems() %}
+{% if group not in ['all', 'ungrouped'] %}
+[{{ group }}]
+{% for host in hosts %}
+{% if host != 'localhost' %}
+{{ host }} ansible_ssh_host={{ hostvars[host].ansible_ssh_host }} ansible_ssh_user={{ hostvars[host].ansible_ssh_user }} ansible_ssh_private_key_file={{ hostvars[host].ansible_ssh_private_key_file }}
+{% endif %}
+{% endfor %}
+{% if not loop.last %}
+
+{% endif %}
+{% endif %}
+{% endfor %}
