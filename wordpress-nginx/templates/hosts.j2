@@ -1,5 +1,5 @@
 {% for group, hosts in groups.iteritems() %}
-{% if group not in ['all', 'ungrouped'] %}
+{% if group.startswith('wordpress') %}
 [{{ group }}]
 {% for host in hosts %}
 {% if host != 'localhost' %}

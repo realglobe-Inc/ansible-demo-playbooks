@@ -4,8 +4,8 @@ idcf_vm_spec: light.S1
 idcf_vm_template: CentOS 7.1 64-bit
 idcf_vm_firewall_cidr: "0.0.0.0/0"
 idcf_vm_ssh_user: root
-
 idcf_vm_inventory_groups: []
+idcf_vm_ports: []
 
 # 以下は設定必須
 idcf_vm_name: null
