@@ -28,7 +28,7 @@
   * mysql roleを編集する
   * wordpress roleを編集する
 
-### [課題]Mackerelと連携させる
+### [自由課題]Mackerelと連携させる
 1. 方針
 2. ヒント
 
@@ -354,7 +354,7 @@ ansible-playbook -i ./hosts ./site.yml
 
 これでDBサーバー、アプリケーション・サーバーの2台構成のWordpress環境の完成です！
 
-# Mackerel連携
+# [自由課題]Mackerelと連携させる
 
 ## 1. 方針
 今回のWordpress構築用には、今の段階では使われていないMackerelエージェント・インストール用ロール `mackerel` が含まれています（`roles/mackerel`内）。  
