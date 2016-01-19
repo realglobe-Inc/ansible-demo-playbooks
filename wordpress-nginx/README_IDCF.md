@@ -85,10 +85,16 @@ Ansible実行マシンを作成してSSHし、Ansibleをインストールする
   yum install epel-release -y
   ```
 
-3. Ansibleをインストール
+3. Ansible, pipをインストール
 
   ```
-  yum install ansible -y
+  yum install ansible python-pip -y
+  ```
+
+4. CloudStack API操作に必要なPythonライブラリをインストール
+
+  ```bash
+  pip install cs sshpubkeys
   ```
 
 4. ansibleコマンドが使用できることを確認する
@@ -126,37 +132,37 @@ AnsibleからIDCFクラウドが提供するCloudStack APIを操作して、Word
   ![図1](./images/idcf-api-1.png)
 
 2. **エンドポイント**、**API Key**、**Secret Key** を確認
-  (東日本、西日本はどちらを選んでもOKです)
+  (リージョン[東日本、西日本]はAnsible実行マシンと同一リージョンを選びましょう)
   ![図2](./images/idcf-api-2.png)
 
 ### 2. 接続設定ファイルを作成
 設定ファイル `~/.cloudstack.ini` を作成し、上で確認した値を使って以下のように編集
 
-  ```ini
-  [cloudstack]
-  endpoint = エンドポイント
-  key = API Key
-  secret = Secret Key
-  timeout = 100
-  ```
+```
+[cloudstack]
+endpoint = エンドポイント
+key = API Key
+secret = Secret Key
+timeout = 100
+```
 
 ### 3. Ansibleから自動でVMを作成
 プレイブックを使ってWordpress用VMを作成。SSH鍵の設定、公開IPの取得、ファイアウォール設定なども自動で実行される
 
-  ```
-  ansible-playbook -i ./localhost ./prepare_idcf.yml
-  ```
+```
+ansible-playbook -i ./localhost ./prepare_idcf.yml
+```
 
 ### 4. 生成されたInventoryファイルを確認
 プレイブックが正常に完了すると、同じディレクトリに `hosts` と言う名前のファイルが作られる。  
 このファイル内に作成されたWordpress用VMへの接続情報が以下のように正しく書き込まれていることを確認。
 
-  ```
-  [wordpress-server]
-  wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
-  ```
+```
+[wordpress-server]
+wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
+```
 
-  `xxx.xxx.xxx.xxx`の部分がWordpressが公開されるときのアドレスになる
+`xxx.xxx.xxx.xxx`の部分がWordpressが公開されるときのアドレスになる
 
 :warning: IDCFクラウド以外の場合は、`hosts` ファイルを上記の形式で手動作成する
 
