@@ -1,0 +1,5 @@
+---
+- name: mackerel-agent再起動
+  service:
+    name: mackerel-agent
+    state: restarted

@@ -1,4 +1,4 @@
-# WordPress構築Playbook - Ansible実行マシン上での手順
+# WordPress構築Playbook - Ansible実行マシン上での手順
 
 ## 目次
 
@@ -28,6 +28,9 @@
   * mysql roleを編集する
   * wordpress roleを編集する
 
+### [課題]Mackerelと連携させる
+1. 方針
+2. ヒント
 
 ## Ansible環境準備
 
@@ -43,26 +46,26 @@ Ansible実行マシンを作成してSSHし、Ansibleをインストールする
 
 ### 2. Ansible実行マシンにSSH接続する
 
-#### :small_blue_diamond: Mac、Linuxの場合
+* #### Mac、Linuxの場合
 
-1. ターミナルを開く
-2. VM作成時に使った秘密鍵のパーミッションを600に変更する
+  1. ターミナルを開く
+  2. VM作成時に使った秘密鍵のパーミッションを600に変更する
 
-  ```
-  chmod 600 ssh_private_key
-  ```
+    ```bash
+    chmod 600 ssh_private_key
+    ```
 
-3. Ansible実行マシンにSSH接続する
+  3. Ansible実行マシンにSSH接続する
 
-  ```
-  ssh root@xxx.xxx.xxx.xxx -i ssh_private_key
-  ```
+    ```bash
+    ssh root@xxx.xxx.xxx.xxx -i ssh_private_key
+    ```
 
-#### :small_blue_diamond: Windowsの場合（Tera term使用時）
+* #### Windowsの場合（Tera term使用時）
 
-1. Tera termを起動する
-2. ホストにはAnsible実行マシンのIPアドレスを入力
-3. ユーザー名は「root」、秘密鍵にはVM作成時に使った秘密鍵を指定
+  1. Tera termを起動する
+  2. ホストにはAnsible実行マシンのIPアドレスを入力
+  3. ユーザー名は「root」、秘密鍵にはVM作成時に使った秘密鍵を指定
 
 ### 3．実行マシン上にAnsibleをインストール
 
@@ -129,18 +132,19 @@ AnsibleからIDCFクラウドが提供するCloudStack APIを操作して、Word
 ### 2. 接続設定ファイルを作成
 設定ファイル `~/.cloudstack.ini` を作成し、上で確認した値を使って以下のように編集
 
-  ```
+  ```ini
   [cloudstack]
   endpoint = エンドポイント
   key = API Key
   secret = Secret Key
+  timeout = 100
   ```
 
 ### 3. Ansibleから自動でVMを作成
 プレイブックを使ってWordpress用VMを作成。SSH鍵の設定、公開IPの取得、ファイアウォール設定なども自動で実行される
 
   ```
-  ansible-playbook ./idcf.yml
+  ansible-playbook -i ./localhost ./prepare_idcf.yml
   ```
 
 ### 4. 生成されたInventoryファイルを確認
@@ -163,7 +167,7 @@ AnsibleからIDCFクラウドが提供するCloudStack APIを操作して、Word
 1. wordpressをインストールするplaybookを実行
 
   ```
-  ansible-playbook site.yml -i hosts
+  ansible-playbook -i ./hosts ./site.yml
   ```
 
 2. ブラウザから`hosts`内に書かれたIPアドレスにアクセスして、Wordpressインストール画面を表示。  
@@ -172,7 +176,7 @@ AnsibleからIDCFクラウドが提供するCloudStack APIを操作して、Word
 3. Wordpressをアンインストールするplaybookを実行、環境をクリーンアップする。
 
   ```
-  ansible-playbook clean.yml -i hosts
+  ansible-playbook -i ./hosts ./clean.yml
   ```
 
 4. Wordpressにアクセスできなくなっていることを確認
@@ -180,65 +184,94 @@ AnsibleからIDCFクラウドが提供するCloudStack APIを操作して、Word
 # AppサーバーとDBサーバーの分割
 
 先ほど構築したWordpressサーバーは、WebアプリケーションとDBが同じホスト上に乗っている一台構成のものでしたが、プロダクション運用の際にはパフォーマンスや可用性を考慮してアプリケーション・サーバーとDBサーバーを分割した構成を取ることも多いです。  
-しかし、残念ながら（？）今のままのplaybookはこの様な構成に対応していません。  
+しかし、今のままのplaybookはこの様な構成に対応していません。  
 そこで、ここからはplaybookを編集してアプリ+DBの二台構成Wordpress環境を構築してみましょう！
 
 ## 1. DBサーバーを作成する
+  1. DBサーバーの要件
+    * OSはCentOS7.1で作成
+    * DBのバックエンドはCentOS7系デフォルトのMariaDBとする（CentOS6系ではMySQL）
+    * SSH KeyはWordpressサーバーと同じものを使用する
+    * DBはローカルネットワーク内からのアクセス専用なので、ポート開放の追加設定は必要なし
 
-1. 新しくDBサーバー用のVMを作成する
-  * OSはCentOS7.1で作成
-  * SSH KeyはWebサーバーと同じものを使用する
-  * ローカルネットワーク内からしかアクセスしないので、IPアドレスの設定は必要なし
+  2. `prepare_idcf.yml`を編集
+    現在`wordpress-server`のみを作成するようになっているので、以下のように`wordpress-db` vmも作成できるようにしましょう。
 
-2. Ansible実行マシンからssh接続できることを確認する
-  * Wordpressサーバーと同じSSH Keyを使用しているので、設定の変更なしにSSH接続できる
+    ```yaml
+    ---
+    - hosts: localhost
+      connection: local
+      roles:
+        - role: idcf_vm
+          idcf_vm_name: wordpress-server
+          idcf_vm_inventory_groups:
+            - wordpress-server
+          idcf_vm_ssh_key_name: ansible-wordpress-handson
+          idcf_vm_ports:
+            - port: 80
+              protocol: tcp
+        # 追記ここから
+        - role: idcf_vm
+          idcf_vm_name: wordpress-db
+          idcf_vm_inventory_groups:
+            - wordpress-db
+          idcf_vm_ssh_key_name: ansible-wordpress-handson
+        # 追記ここまで
+      tasks:
+        - name: Inventory設定をhostsに書き出し
+          template:
+            src: "{{ playbook_dir }}/templates/hosts.j2"
+            dest: "{{ playbook_dir }}/hosts"
+            backup: yes
+      ```
 
-    ```sh
-    ssh xxx.xxx.xxx.xxx
-    exit
+  3. プレイブック実行
+    編集した`prepare_idcf.yml`を`ansible-playbook`コマンドから実行しましょう。
+
+    ```
+    ansible-playbook -i ./localhost ./prepare_idcf.yml
     ```
 
-## 2. インベントリにグループを追加する
+  4. Inventoryファイルを確認
+    Inventoryに`wordpress-db`の情報が追加されているか、 `hosts` を確認してみましょう。
 
-インベントリを書き換え、wordpress-dbグループを追加する
+    ```
+    [wordpress-db]
+wordpress-db ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
 
-* エディタで`hosts`を開き、以下のように書き換える
+    [wordpress-server]
+wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
+    ```
 
-  ```ini
-  [wordpress-server]
-  xxx.xxx.xxx.xxx ansible_ssh_user=root
+    このように、`wordpress-db`, `wordpress-server`両方のホスト情報が書かれていればOKです。
 
-  [wordpress-db]
-  xxx.xxx.xxx.xxx ansible_ssh_user=root
-  ```
-
-  ※ AWSをお使いの方は ```ansible_ssh_user=centos``` としてください
-
-## 3. playbookを編集する
+## 2. playbookを編集する
 
 ### site.ymlを編集し、DBサーバーの設定手順、アプリケーション・サーバーの設定手順を分割する
 
-DBサーバー、アプリケーション・サーバー毎に必要なロールが異なることに注意してください。
+DBサーバー、アプリケーション・サーバー毎に必要なロールが異なることに注意してください。  
+また、効率化のために共通の`common`ロールを先に実行している点もポイントです。
 
 * site.yml
 
   ```yaml
   ---
-  - name: 最初にDB, アプリ両サーバーの情報を取得する
+  - name: 共通のタスクを実行
     hosts: all
+    sudo: yes
+    roles:
+      - common
 
   - name: MySQLをインストール
     hosts: wordpress-db
     sudo: yes
     roles:
-      - common
       - mysql
 
   - name: Wordpress, Nginx, PHP-FPMをインストール
     hosts: wordpress-server
     sudo: yes
     roles:
-      - common
       - nginx
       - php-fpm
       - wordpress
@@ -309,6 +342,26 @@ define('DB_HOST', 'localhost');
 
 ### ansible-playbookを実行して、ブラウザからアクセスし、wordpressをセットアップする
 
-```ansible-playbook site.yml -i hosts```
+```bash
+ansible-playbook -i ./hosts ./site.yml
+```
 
 これでDBサーバー、アプリケーション・サーバーの2台構成のWordpress環境の完成です！
+
+# Mackerel連携
+
+## 1. 方針
+今回のWordpress構築用には、今の段階では使われていないMackerelエージェント・インストール用ロール `mackerel` が含まれています（`roles/mackerel`内）。  
+このロールを有効化することで、自動で構築したホストをMackerelに登録することが可能となります。
+
+## 2. ヒント
+* `site.yml`中 **共通のタスクを実行** の`roles`内に`mackerel`ロールの呼び出しを加えましょう。
+* Mackerel連携には`mackerel_api_key`変数の設定が必要です。今回は`ansible-playbook`コマンドのオプションで変数を設定してみましょう
+
+  ```bash
+  ansible-playbook -i ./hosts -e "mackerel_api_key=YourApiKey" ./site.yml
+  ```
+
+  の形式で実行することができます。
+
+`mackerel`ロール実行完了後にMackerelのダッシュボードを見ると、登録ホストに`wordpress-server`と`wordpress-db`が増えていることが確認できます。

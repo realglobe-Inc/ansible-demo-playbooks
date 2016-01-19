@@ -1,4 +1,8 @@
 ---
+- name: mackerel_api_keyが設定されていることを確認
+  assert:
+    that: "mackerel_api_key is not none"
+
 - name: mackerelリポジトリを追加
   shell: curl -fsSL {{ mackerel_setup_yum_url }} | sh
 
@@ -10,7 +14,9 @@
   lineinfile:
     dest: /etc/mackerel-agent/mackerel-agent.conf
     line: "apikey = \"{{ mackerel_api_key }}\""
-    regexp: "^apikey\\s*="
+    regexp: '^#*\s*apikey\s*='
+  notify:
+    - mackerel-agent再起動
 
 - name: mackerel-agentを起動
   service:
