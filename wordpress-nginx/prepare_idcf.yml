@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  roles:
+    - role: idcf_vm
+      idcf_vm_name: wordpress-server
+      idcf_vm_inventory_groups:
+        - wordpress-server
+      idcf_vm_ssh_key_name: ansible-wordpress-handson
+      idcf_vm_ports:
+        - port: 80
+          protocol: tcp
+  tasks:
+    - name: Inventory設定をhostsに書き出し
+      template:
+        src: "{{ playbook_dir }}/templates/hosts.j2"
+        dest: "{{ playbook_dir }}/hosts"
+        backup: yes

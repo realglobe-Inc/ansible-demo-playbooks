@@ -9,5 +9,3 @@
     - nginx
     - php-fpm
     - wordpress
-    - role: mackerel
-      when: mackerel_api_key is defined and mackerel_api_key

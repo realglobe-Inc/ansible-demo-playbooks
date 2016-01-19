@@ -1,0 +1,13 @@
+---
+- name: パブリックIPアドレスを発行
+  cs_ip_address:
+  register: idcf_vm_register_public_ip_result
+
+- name: パブリックIPを取得
+  set_fact:
+    idcf_vm_registered_public_ip: "{{ idcf_vm_register_public_ip_result.ip_address }}"
+
+- name: スタティックナットを設定
+  cs_staticnat:
+    ip_address: "{{ idcf_vm_registered_public_ip }}"
+    vm: "{{ idcf_vm_full_name }}"
