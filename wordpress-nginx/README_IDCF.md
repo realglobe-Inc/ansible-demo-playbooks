@@ -200,6 +200,8 @@ wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_
     * SSH KeyはWordpressサーバーと同じものを使用する
     * DBはローカルネットワーク内からのアクセス専用なので、ポート開放の追加設定は必要なし
 
+    :warning: IDCFクラウド以外を使う場合は、WordpressサーバーとDBサーバー間をローカルIPで通信可能にしてください。
+
   2. `prepare_idcf.yml`を編集
     現在`wordpress-server`のみを作成するようになっているので、以下のように`wordpress-db` vmも作成できるようにしましょう。
 
