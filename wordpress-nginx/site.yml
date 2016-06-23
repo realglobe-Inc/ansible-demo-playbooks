@@ -1,7 +1,7 @@
 ---
 - name: Wordpress, MySQL, Nginx, PHP-FPMをインストール
   hosts: wordpress-server
-  sudo: yes
+  become: yes
 
   roles:
     - common

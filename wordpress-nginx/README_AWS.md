@@ -143,7 +143,7 @@ Ansible実行マシンからWordpressサーバーにSSH接続できるように�
 
   ```ini
   [wordpress-server]
-  xxx.xxx.xxx.xxx ansible_ssh_user=centos
+  xxx.xxx.xxx.xxx ansible_user=centos
   ```
 
 ## 7. ansible-playbook実行
@@ -186,10 +186,10 @@ ansible-playbookコマンドを実行する
 
   ```ini
   [wordpress-server]
-  xxx.xxx.xxx.xxx ansible_ssh_user=centos
+  xxx.xxx.xxx.xxx ansible_user=centos
 
   [wordpress-db]
-  xxx.xxx.xxx.xxx ansible_ssh_user=centos
+  xxx.xxx.xxx.xxx ansible_user=centos
   ```
 
 ## 10. playbookを編集する
@@ -207,14 +207,14 @@ DBサーバー、アプリケーション・サーバー毎に必要なロール
 
   - name: MySQLをインストール
     hosts: wordpress-db
-    sudo: yes
+    become: yes
     roles:
       - common
       - mysql
 
   - name: Wordpress, Nginx, PHP-FPMをインストール
     hosts: wordpress-server
-    sudo: yes
+    become: yes
     roles:
       - common
       - nginx

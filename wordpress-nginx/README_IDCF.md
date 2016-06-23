@@ -39,7 +39,7 @@ Ansible実行マシンを作成してSSHし、Ansibleをインストールする
 ### 1. VMを作成する
 
 * Ansible実行マシン用VMを作成する
-  * イメージは「CentOS 7.1 64-bit」を使用
+  * イメージは「CentOS 7.2 64-bit」を使用
   * 名前は「ansible-machine」とする
 
 :warning: IDCFコントロール・パネル操作方法の詳細は、「IDCFクラウド上での手順」スライドを参照
@@ -159,7 +159,7 @@ ansible-playbook -i ./localhost ./prepare_idcf.yml
 
 ```
 [wordpress-server]
-wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
+wordpress-server ansible_host=xxx.xxx.xxx.xxx ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
 ```
 
 `xxx.xxx.xxx.xxx`の部分がWordpressが公開されるときのアドレスになる
@@ -195,7 +195,7 @@ wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_
 
 ## 1. DBサーバーを作成する
   1. DBサーバーの要件
-    * OSはCentOS7.1で作成
+    * OSはCentOS7.2で作成
     * DBのバックエンドはCentOS7系デフォルトのMariaDBとする（CentOS6系ではMySQL）
     * SSH KeyはWordpressサーバーと同じものを使用する
     * DBはローカルネットワーク内からのアクセス専用なので、ポート開放の追加設定は必要なし
@@ -245,10 +245,10 @@ wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_
 
     ```
     [wordpress-db]
-wordpress-db ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
+wordpress-db ansible_host=xxx.xxx.xxx.xxx ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
 
     [wordpress-server]
-wordpress-server ansible_ssh_host=xxx.xxx.xxx.xxx ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
+wordpress-server ansible_host=xxx.xxx.xxx.xxx ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa-ansible-wordpress-handson
     ```
 
     このように、`wordpress-db`, `wordpress-server`両方のホスト情報が書かれていればOKです。
@@ -266,19 +266,19 @@ DBサーバー、アプリケーション・サーバー毎に必要なロール
   ---
   - name: 共通のタスクを実行
     hosts: all
-    sudo: yes
+    become: yes
     roles:
       - common
 
   - name: MySQLをインストール
     hosts: wordpress-db
-    sudo: yes
+    become: yes
     roles:
       - mysql
 
   - name: Wordpress, Nginx, PHP-FPMをインストール
     hosts: wordpress-server
-    sudo: yes
+    become: yes
     roles:
       - nginx
       - php-fpm

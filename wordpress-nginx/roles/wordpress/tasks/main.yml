@@ -3,13 +3,16 @@
   get_url:
     url: https://ja.wordpress.org/wordpress-{{ wp_version }}-ja.tar.gz
     dest: /srv/wordpress-{{ wp_version }}-ja.tar.gz
-    sha256sum: "{{ wp_sha256sum }}"
 
 - name: Wordpress圧縮ファイルを展開
   unarchive:
     src: /srv/wordpress-{{ wp_version }}-ja.tar.gz
     dest: /srv/
     copy: no
+  environment:
+    LANG: C
+    LC_ALL: C
+    LC_MESSAGES: C
 
 - name: \"wordpress\"グループを追加
   group:
