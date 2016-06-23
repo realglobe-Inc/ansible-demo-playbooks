@@ -42,7 +42,7 @@ Ansible実行マシンを作成してSSHし、Ansibleをインストールする
   * イメージは「CentOS 7.2 64-bit」を使用
   * 名前は「ansible-machine」とする
 
-:warning: IDCFコントロール・パネル操作方法の詳細は、「IDCFクラウド上での手順」スライドを参照
+:warning: IDCFコントロール・パネル操作方法の詳細は、「[IDCFクラウド上での手順](https://drive.google.com/open?id=0B7FDfjgs-uG9bld1UkQ5UC1sUjg)」を参照
 
 ### 2. Ansible実行マシンにSSH接続する
 
