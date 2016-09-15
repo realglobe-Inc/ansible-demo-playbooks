@@ -5,6 +5,8 @@
 
 - name: mackerelリポジトリを追加
   shell: curl -fsSL {{ mackerel_setup_yum_url }} | sh
+  args:
+    warn: false
 
 - name: mackerel-agentをインストール
   yum:

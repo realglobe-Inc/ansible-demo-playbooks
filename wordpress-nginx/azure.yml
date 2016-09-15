@@ -1,0 +1,69 @@
+---
+- name: Azure上にUbuntuのオートスケールを設定
+  hosts: localhost
+  connection: local
+  vars:
+    resourcegroup_name: AnsibleDemo
+    resourcegroup_location: japanwest
+    vm_name: ansiblewordpress
+    vm_size: Standard_A1
+    admin_username: ansibleAdmin
+    admin_password: VeryVeryUnsecureP@ssw0rd
+  tasks:
+    - name: リソースグループの作成
+      azure_rm_resourcegroup:
+        name: "{{ resourcegroup_name }}"
+        location: "{{ resourcegroup_location }}"
+
+    - name: 仮想ネットワークを作成
+      azure_rm_virtualnetwork:
+        resource_group: "{{ resourcegroup_name }}"
+        name: vn01
+        address_prefixes_cidr:
+          - "10.0.0.0/16"
+
+    - name: サブネットを作成
+      azure_rm_subnet:
+        resource_group: "{{ resourcegroup_name }}"
+        virtual_network_name: vn01
+        name: subnet01
+        address_prefix_cidr: "10.0.1.0/24"
+
+    - name: リソースグループ上にVMを作成
+      azure_rm_virtualmachine:
+        name: "{{ vm_name }}"
+        resource_group: "{{ resourcegroup_name }}"
+        vm_size: "{{ vm_size }}"
+        public_ip_allocation_method: Dynamic
+        admin_username: "{{ admin_username }}"
+        admin_password: "{{ admin_password }}"
+        open_ports:
+          - 22
+          - 80
+        os_type: Linux
+        image:
+          publisher: OpenLogic
+          offer: CentOS
+          sku: "7.2"
+          version: latest
+      register: azure_vm
+
+    - name: できたVMを操作対象ホストに追加
+      add_host:
+        name: wordpress
+        ansible_host: "{{ azure_vm.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces.0.properties.ipConfigurations.0.properties.publicIPAddress.properties.ipAddress }}"
+        ansible_user: "{{ admin_username }}"
+        ansible_ssh_pass: "{{ admin_password }}"
+        ansible_become_pass: "{{ admin_password }}"
+
+- hosts: wordpress
+  become: true
+  vars:
+    mackerel_api_key: # 自分のMackerel API Keyの入力必須
+  roles:
+    - common
+    - mysql
+    - nginx
+    - php-fpm
+    - wordpress
+    - mackerel
